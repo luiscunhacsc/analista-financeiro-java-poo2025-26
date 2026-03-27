@@ -7,6 +7,7 @@ Aplicacao Java com Swing que desenha o desempenho do S&P 500 para:
 - Ultimos 5 anos
 - Desde o inicio dos dados disponiveis na fonte
 - Sobreposicao no grafico de SMA 50, SMA 200 e Bandas de Bollinger (20,2)
+- Subgraficos de MACD e RSI por baixo do grafico principal
 
 Inclui tambem um painel lateral de indicadores tecnicos:
 
