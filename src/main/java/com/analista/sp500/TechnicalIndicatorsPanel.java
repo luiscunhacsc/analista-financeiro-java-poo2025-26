@@ -14,8 +14,11 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.Window;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,60 +45,64 @@ public class TechnicalIndicatorsPanel extends JPanel {
     private static final Color SIGNAL_WARNING_FG = new Color(255, 205, 105);
 
     private static final Map<String, String> INDICATOR_EXPLANATIONS = Map.ofEntries(
-            Map.entry("RSI", "<b>O que mede:</b> O RSI mede momentum (forca dos movimentos) numa escala de 0 a 100, normalmente em 14 periodos.<br>"
-                    + "<b>Como interpretar:</b> Acima de 70 costuma ser lido como sobrecompra; abaixo de 30 como sobrevenda.<br>"
-                    + "<b>Boas praticas:</b> Use junto com tendencia e suporte/resistencia. Em tendencias fortes, RSI pode ficar muito tempo em zonas extremas."),
-            Map.entry("MACD", "<b>O que mede:</b> O MACD compara duas medias moveis exponenciais para captar aceleracao/desaceleracao do preco.<br>"
-                    + "<b>Como interpretar:</b> Cruzamento da linha MACD com a linha de sinal sugere mudanca de momentum. Acima de zero tende a favorecer alta, abaixo de zero baixa.<br>"
-                    + "<b>Boas praticas:</b> Evite usar isolado em mercados laterais, onde pode gerar falsos sinais."),
-            Map.entry("Tendencia SMA 50", "<b>O que mede:</b> Relacao entre preco atual e media movel simples de 50 periodos.<br>"
-                    + "<b>Como interpretar:</b> Preco acima da SMA 50 indica vies de medio prazo mais positivo; abaixo, vies mais fraco.<br>"
-                    + "<b>Boas praticas:</b> Funciona melhor como filtro de tendencia do que como gatilho unico de entrada/saida."),
-            Map.entry("Tendencia SMA 200", "<b>O que mede:</b> Relacao entre preco atual e media movel simples de 200 periodos.<br>"
-                    + "<b>Como interpretar:</b> Acima da SMA 200 costuma indicar tendencia estrutural mais forte; abaixo, ambiente mais defensivo.<br>"
-                    + "<b>Boas praticas:</b> Indicador lento; confirma direcao de longo prazo, mas reage tarde em viragens abruptas."),
-            Map.entry(KEY_LAST_CLOSE, "<b>O que mede:</b> Ultimo preco de fecho disponivel no periodo selecionado.<br>"
-                    + "<b>Como interpretar:</b> Serve de referencia base para comparar com medias, bandas e extremos do periodo.<br>"
-                    + "<b>Boas praticas:</b> Em intraday, pode divergir do preco corrente porque este valor e de fecho."),
-            Map.entry(KEY_SMA20, "<b>O que mede:</b> Media movel simples dos ultimos 20 fechos.<br>"
-                    + "<b>Como interpretar:</b> Mostra tendencia de curto prazo de forma suavizada.<br>"
-                    + "<b>Boas praticas:</b> Boa para leitura rapida, mas sensivel a ruido em fases de baixa direcionalidade."),
-            Map.entry(KEY_SMA50, "<b>O que mede:</b> Media movel simples dos ultimos 50 fechos.<br>"
-                    + "<b>Como interpretar:</b> Referencia classica de medio prazo para direcao do mercado.<br>"
-                    + "<b>Boas praticas:</b> Cruzamentos com o preco ajudam contexto, mas podem atrasar sinais."),
-            Map.entry(KEY_SMA200, "<b>O que mede:</b> Media movel simples dos ultimos 200 fechos.<br>"
-                    + "<b>Como interpretar:</b> Linha de longo prazo muito usada para separar ciclos de alta/baixa.<br>"
-                    + "<b>Boas praticas:</b> Excelente para contexto macro, pouco util para timing muito curto."),
-            Map.entry(KEY_EMA20, "<b>O que mede:</b> Media movel exponencial de 20 periodos, com maior peso nos dados recentes.<br>"
-                    + "<b>Como interpretar:</b> Reage mais rapido que SMA 20 a mudancas de direcao.<br>"
-                    + "<b>Boas praticas:</b> Melhor para ritmo de curto prazo, mas tambem gera mais sinais falsos."),
-            Map.entry(KEY_RSI14, "<b>O que mede:</b> RSI calculado em 14 periodos.<br>"
-                    + "<b>Como interpretar:</b> Zonas >70 e <30 sinalizam extremos de momentum, nao necessariamente reversao imediata.<br>"
-                    + "<b>Boas praticas:</b> Combine com estrutura de preco e tendencia dominante."),
-            Map.entry(KEY_MACD, "<b>O que mede:</b> Linha MACD = EMA curta - EMA longa (tipicamente 12 - 26).<br>"
-                    + "<b>Como interpretar:</b> Valores crescentes indicam reforco de momentum; decrescentes, perda de forca.<br>"
-                    + "<b>Boas praticas:</b> Observe em conjunto com linha de sinal e histograma."),
-            Map.entry(KEY_MACD_SIGNAL, "<b>O que mede:</b> Media exponencial da linha MACD (tipicamente 9 periodos).<br>"
-                    + "<b>Como interpretar:</b> Cruzamentos MACD/sinal sao usados como alertas de mudanca de ritmo.<br>"
-                    + "<b>Boas praticas:</b> Em consolidacao, pode alternar frequentemente sem direcao clara."),
-            Map.entry(KEY_MACD_HIST, "<b>O que mede:</b> Diferenca entre MACD e linha de sinal.<br>"
-                    + "<b>Como interpretar:</b> Positivo sugere predominio de alta; negativo, predominio de baixa. A variacao mostra aceleracao/desaceleracao.<br>"
-                    + "<b>Boas praticas:</b> Excelente para momentum, mas nao substitui analise de tendencia."),
-            Map.entry(KEY_BOLL_UPPER, "<b>O que mede:</b> Banda superior de Bollinger (SMA 20 + 2 desvios padrao, na configuracao comum).<br>"
-                    + "<b>Como interpretar:</b> Aproximacao ou toque pode indicar esticamento de curto prazo.<br>"
-                    + "<b>Boas praticas:</b> Toque na banda superior nao e sinal automatico de venda em tendencia forte."),
-            Map.entry(KEY_BOLL_MIDDLE, "<b>O que mede:</b> Banda media de Bollinger (normalmente SMA 20).<br>"
-                    + "<b>Como interpretar:</b> Atua como linha de equilibrio do movimento recente.<br>"
-                    + "<b>Boas praticas:</b> Perda/recuperacao desta linha pode ajudar leitura de continuidade ou enfraquecimento."),
-            Map.entry(KEY_BOLL_LOWER, "<b>O que mede:</b> Banda inferior de Bollinger (SMA 20 - 2 desvios padrao, na configuracao comum).<br>"
-                    + "<b>Como interpretar:</b> Aproximacao ou toque pode indicar pressao vendedora estendida.<br>"
-                    + "<b>Boas praticas:</b> Em baixa forte, preco pode permanecer perto da banda por bastante tempo."),
-            Map.entry(KEY_HIGH_52, "<b>O que mede:</b> Maximo observado nas ultimas 52 semanas (ou janela equivalente disponivel).<br>"
-                    + "<b>Como interpretar:</b> Funciona como referencia de breakout e forca relativa historica.<br>"
-                    + "<b>Boas praticas:</b> Ruptura ganha qualidade quando acompanhada por volume e contexto de tendencia."),
-            Map.entry(KEY_LOW_52, "<b>O que mede:</b> Minimo observado nas ultimas 52 semanas (ou janela equivalente disponivel).<br>"
-                    + "<b>Como interpretar:</b> Referencia importante de risco e possivel ruptura de suporte historico.<br>"
-                    + "<b>Boas praticas:</b> Quebra de minimo anual tende a sinalizar aumento de fragilidade estrutural.")
+            Map.entry("RSI", "<b>O que e:</b> RSI (Relative Strength Index) de 14 periodos.<br>"
+                    + "<b>Calculo:</b><br>"
+                    + "- Delta = Fecho(i) - Fecho(i-1)<br>"
+                    + "- Ganho = max(Delta, 0), Perda = max(-Delta, 0)<br>"
+                    + "- MediaGanho e MediaPerda suavizadas por Wilder:<br>"
+                    + "&nbsp;&nbsp;MediaNova = ((MediaAnterior * (n-1)) + ValorAtual) / n<br>"
+                    + "- RS = MediaGanho / MediaPerda<br>"
+                    + "- RSI = 100 - (100 / (1 + RS))<br>"
+                    + "<b>Escala:</b> 0 a 100. Tipicamente >70 sobrecompra, <30 sobrevenda.<br>"
+                    + "<b>Nota:</b> Em tendencia forte pode permanecer bastante tempo em zonas extremas."),
+            Map.entry("MACD", "<b>O que e:</b> Indicador de momentum e tendencia baseado em medias exponenciais.<br>"
+                    + "<b>Calculo:</b><br>"
+                    + "- EMA curta (12) e EMA longa (26)<br>"
+                    + "- Linha MACD = EMA12 - EMA26<br>"
+                    + "- Linha de sinal = EMA9 da linha MACD<br>"
+                    + "- Histograma = MACD - Sinal<br>"
+                    + "<b>Leitura:</b> Cruzamentos MACD/Sinal sugerem mudanca de ritmo; valor acima de zero indica predominio de alta."),
+            Map.entry("Tendencia SMA 50", "<b>Definicao:</b> Compara o ultimo fecho com a SMA 50.<br>"
+                    + "<b>Calculo da SMA:</b> SMA50 = soma dos ultimos 50 fechos / 50.<br>"
+                    + "<b>Regra no painel:</b> Preco > SMA50 = Alta; Preco < SMA50 = Baixa; igual = Neutro.<br>"
+                    + "<b>Uso:</b> filtro de tendencia de medio prazo."),
+            Map.entry("Tendencia SMA 200", "<b>Definicao:</b> Compara o ultimo fecho com a SMA 200.<br>"
+                    + "<b>Calculo da SMA:</b> SMA200 = soma dos ultimos 200 fechos / 200.<br>"
+                    + "<b>Regra no painel:</b> Preco > SMA200 = Alta; Preco < SMA200 = Baixa; igual = Neutro.<br>"
+                    + "<b>Uso:</b> referencia de tendencia estrutural/longo prazo."),
+            Map.entry(KEY_LAST_CLOSE, "<b>Definicao:</b> Ultimo preco de fecho disponivel para o periodo atual.<br>"
+                    + "<b>Origem:</b> campo Close do ultimo registo diario carregado.<br>"
+                    + "<b>Uso:</b> base para comparar com medias, bandas e extremos."),
+            Map.entry(KEY_SMA20, "<b>Calculo:</b> SMA20 = (C1 + C2 + ... + C20) / 20, onde C e o fecho diario.<br>"
+                    + "<b>Uso:</b> tendencia de curto prazo e linha media de Bollinger."),
+            Map.entry(KEY_SMA50, "<b>Calculo:</b> SMA50 = soma dos ultimos 50 fechos / 50.<br>"
+                    + "<b>Uso:</b> tendencia de medio prazo e suporte/resistencia dinamico."),
+            Map.entry(KEY_SMA200, "<b>Calculo:</b> SMA200 = soma dos ultimos 200 fechos / 200.<br>"
+                    + "<b>Uso:</b> tendencia de longo prazo, muito usada como filtro macro."),
+            Map.entry(KEY_EMA20, "<b>Calculo:</b><br>"
+                    + "- Seed inicial = SMA20<br>"
+                    + "- Multiplicador k = 2 / (20 + 1)<br>"
+                    + "- EMA(i) = ((Preco(i) - EMA(i-1)) * k) + EMA(i-1)<br>"
+                    + "<b>Uso:</b> semelhante a SMA20, mas com maior peso nos dados recentes."),
+            Map.entry(KEY_RSI14, "<b>Indicador:</b> mesmo RSI descrito acima, com n=14.<br>"
+                    + "<b>Formula final:</b> RSI = 100 - (100 / (1 + RS)).<br>"
+                    + "<b>Interpretação comum:</b> >70 sobrecompra; <30 sobrevenda."),
+            Map.entry(KEY_MACD, "<b>Linha MACD:</b> EMA12 - EMA26.<br>"
+                    + "<b>Interpretação:</b> quanto mais positivo, maior aceleração de alta relativa; quanto mais negativo, maior pressão de baixa."),
+            Map.entry(KEY_MACD_SIGNAL, "<b>Linha de sinal:</b> EMA9 aplicada sobre a série MACD.<br>"
+                    + "<b>Interpretação:</b> usada para cruzamentos com a linha MACD."),
+            Map.entry(KEY_MACD_HIST, "<b>Histograma:</b> MACD - Sinal.<br>"
+                    + "<b>Interpretação:</b> positivo = momentum comprador dominante; negativo = vendedor dominante."),
+            Map.entry(KEY_BOLL_UPPER, "<b>Banda superior:</b> SMA20 + (2 * desvio-padrao dos ultimos 20 fechos).<br>"
+                    + "<b>Interpretação:</b> zona estatisticamente alta do preço recente."),
+            Map.entry(KEY_BOLL_MIDDLE, "<b>Banda media:</b> SMA20.<br>"
+                    + "<b>Interpretação:</b> linha de equilibrio da volatilidade recente."),
+            Map.entry(KEY_BOLL_LOWER, "<b>Banda inferior:</b> SMA20 - (2 * desvio-padrao dos ultimos 20 fechos).<br>"
+                    + "<b>Interpretação:</b> zona estatisticamente baixa do preço recente."),
+            Map.entry(KEY_HIGH_52, "<b>Calculo:</b> maior fecho na janela de 252 sessoes (aprox. 52 semanas uteis).<br>"
+                    + "<b>Interpretação:</b> referencia de breakout e força histórica."),
+            Map.entry(KEY_LOW_52, "<b>Calculo:</b> menor fecho na janela de 252 sessoes.<br>"
+                    + "<b>Interpretação:</b> referencia de fundo anual e risco de continuidade de queda.")
     );
 
     private final TechnicalIndicatorsCalculator calculator = new TechnicalIndicatorsCalculator();
@@ -265,7 +272,7 @@ public class TechnicalIndicatorsPanel extends JPanel {
         JPanel row = new JPanel(new BorderLayout(10, 0));
         row.setOpaque(false);
 
-        JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         left.setOpaque(false);
 
         JLabel keyLabel = new JLabel(key);
@@ -285,22 +292,41 @@ public class TechnicalIndicatorsPanel extends JPanel {
     }
 
     private JButton createInfoButton(String indicatorKey) {
-        JButton button = new JButton("?");
+        JButton button = new JButton("i") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                Color bg = getModel().isRollover() ? new Color(52, 64, 84) : new Color(37, 48, 66);
+                Color border = getModel().isRollover() ? new Color(88, 108, 136) : new Color(70, 86, 112);
+
+                g2.setColor(bg);
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 9, 9);
+                g2.setColor(border);
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 9, 9);
+                g2.dispose();
+
+                super.paintComponent(g);
+            }
+        };
         button.setToolTipText("Explicar indicador");
-        button.setFont(UiTheme.FONT_BODY_BOLD);
-        button.setForeground(UiTheme.TEXT_SECONDARY);
-        button.setBackground(UiTheme.SURFACE_ALT);
-        button.setBorder(new RoundedLineBorder(UiTheme.BORDER, 9, 1));
+        button.setFont(UiTheme.FONT_STATUS.deriveFont(10f));
+        button.setForeground(new Color(172, 186, 208));
+        button.setBackground(new Color(37, 48, 66));
+        button.setBorder(BorderFactory.createEmptyBorder());
         button.setMargin(new Insets(0, 0, 0, 0));
+        button.setBorderPainted(false);
         button.setHorizontalAlignment(SwingConstants.CENTER);
         button.setVerticalAlignment(SwingConstants.CENTER);
         button.setFocusPainted(false);
         button.setFocusable(false);
         button.setContentAreaFilled(true);
         button.setOpaque(true);
-        button.setPreferredSize(new Dimension(22, 22));
-        button.setMinimumSize(new Dimension(22, 22));
-        button.setMaximumSize(new Dimension(22, 22));
+        button.setRolloverEnabled(true);
+        button.setPreferredSize(new Dimension(16, 16));
+        button.setMinimumSize(new Dimension(16, 16));
+        button.setMaximumSize(new Dimension(16, 16));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.addActionListener(e -> showIndicatorExplanation(indicatorKey));
         return button;
