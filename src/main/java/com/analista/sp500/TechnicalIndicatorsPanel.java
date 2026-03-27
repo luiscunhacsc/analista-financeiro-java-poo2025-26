@@ -3,12 +3,16 @@ package com.analista.sp500;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.LinkedHashMap;
@@ -34,6 +38,27 @@ public class TechnicalIndicatorsPanel extends JPanel {
 
     private static final Color SIGNAL_WARNING_BG = new Color(255, 239, 214);
     private static final Color SIGNAL_WARNING_FG = new Color(168, 96, 0);
+
+    private static final Map<String, String> INDICATOR_EXPLANATIONS = Map.ofEntries(
+            Map.entry("RSI", "RSI (Relative Strength Index) mede momentum numa escala de 0 a 100. Valores altos sugerem sobrecompra e valores baixos sugerem sobrevenda."),
+            Map.entry("MACD", "MACD compara duas medias moveis exponenciais para identificar mudancas de tendencia e momentum. Cruzamentos com a linha de sinal sao muito usados."),
+            Map.entry("Tendencia SMA 50", "Compara o preco atual com a media movel simples de 50 periodos. Acima da SMA 50 indica vies mais positivo no medio prazo."),
+            Map.entry("Tendencia SMA 200", "Compara o preco atual com a media movel simples de 200 periodos. Acima da SMA 200 sugere tendencia estrutural de alta."),
+            Map.entry(KEY_LAST_CLOSE, "Ultimo preco de fecho disponivel para o periodo selecionado."),
+            Map.entry(KEY_SMA20, "Media movel simples de 20 periodos. Suaviza o ruido de curto prazo."),
+            Map.entry(KEY_SMA50, "Media movel simples de 50 periodos. Muito usada para identificar tendencia de medio prazo."),
+            Map.entry(KEY_SMA200, "Media movel simples de 200 periodos. Referencia classica de tendencia de longo prazo."),
+            Map.entry(KEY_EMA20, "Media movel exponencial de 20 periodos. Reage mais depressa a variacoes recentes do preco."),
+            Map.entry(KEY_RSI14, "RSI de 14 periodos: mede forca dos movimentos. Acima de 70 pode indicar sobrecompra e abaixo de 30 sobrevenda."),
+            Map.entry(KEY_MACD, "Linha MACD (EMA curta - EMA longa). Mostra aceleracao ou perda de momentum."),
+            Map.entry(KEY_MACD_SIGNAL, "Linha de sinal do MACD (EMA do MACD). Cruzamentos com a linha MACD sao sinais tecnicos comuns."),
+            Map.entry(KEY_MACD_HIST, "Histograma MACD = MACD - linha de sinal. Positivo sugere momentum de alta; negativo, de baixa."),
+            Map.entry(KEY_BOLL_UPPER, "Banda superior de Bollinger. Representa uma zona estatisticamente alta do preco."),
+            Map.entry(KEY_BOLL_MIDDLE, "Banda media de Bollinger (normalmente SMA 20). Funciona como linha de equilibrio."),
+            Map.entry(KEY_BOLL_LOWER, "Banda inferior de Bollinger. Representa uma zona estatisticamente baixa do preco."),
+            Map.entry(KEY_HIGH_52, "Preco maximo observado nas ultimas 52 semanas (ou periodo equivalente disponivel)."),
+            Map.entry(KEY_LOW_52, "Preco minimo observado nas ultimas 52 semanas (ou periodo equivalente disponivel).")
+    );
 
     private final TechnicalIndicatorsCalculator calculator = new TechnicalIndicatorsCalculator();
     private final Map<String, JLabel> valueLabels = new LinkedHashMap<>();
@@ -151,15 +176,20 @@ public class TechnicalIndicatorsPanel extends JPanel {
                 BorderFactory.createEmptyBorder(6, 8, 6, 8)
         ));
 
+        JPanel titleRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        titleRow.setOpaque(false);
+
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(UiTheme.FONT_BODY);
         titleLabel.setForeground(UiTheme.TEXT_SECONDARY);
+        titleRow.add(titleLabel);
+        titleRow.add(createInfoButton(title));
 
         JPanel badgeContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         badgeContainer.setOpaque(false);
         badgeContainer.add(badge);
 
-        card.add(titleLabel, BorderLayout.NORTH);
+        card.add(titleRow, BorderLayout.NORTH);
         card.add(badgeContainer, BorderLayout.CENTER);
         return card;
     }
@@ -197,18 +227,58 @@ public class TechnicalIndicatorsPanel extends JPanel {
         JPanel row = new JPanel(new BorderLayout(10, 0));
         row.setOpaque(false);
 
+        JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        left.setOpaque(false);
+
         JLabel keyLabel = new JLabel(key);
         keyLabel.setFont(UiTheme.FONT_BODY);
         keyLabel.setForeground(UiTheme.TEXT_SECONDARY);
+        left.add(keyLabel);
+        left.add(createInfoButton(key));
 
         JLabel valueLabel = new JLabel("n/d", SwingConstants.RIGHT);
         valueLabel.setFont(UiTheme.FONT_BODY_BOLD);
         valueLabel.setForeground(UiTheme.TEXT_PRIMARY);
         valueLabels.put(key, valueLabel);
 
-        row.add(keyLabel, BorderLayout.WEST);
+        row.add(left, BorderLayout.WEST);
         row.add(valueLabel, BorderLayout.EAST);
         return row;
+    }
+
+    private JButton createInfoButton(String indicatorKey) {
+        JButton button = new JButton("?");
+        button.setToolTipText("Explicar indicador");
+        button.setFont(UiTheme.FONT_STATUS);
+        button.setForeground(UiTheme.TEXT_SECONDARY);
+        button.setBackground(new Color(240, 244, 249));
+        button.setBorder(BorderFactory.createCompoundBorder(
+                new RoundedLineBorder(UiTheme.BORDER, 9, 1),
+                BorderFactory.createEmptyBorder(0, 5, 0, 5)
+        ));
+        button.setFocusPainted(false);
+        button.setFocusable(false);
+        button.setPreferredSize(new Dimension(18, 18));
+        button.setMinimumSize(new Dimension(18, 18));
+        button.setMaximumSize(new Dimension(18, 18));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.addActionListener(e -> showIndicatorExplanation(indicatorKey));
+        return button;
+    }
+
+    private void showIndicatorExplanation(String indicatorKey) {
+        String message = INDICATOR_EXPLANATIONS.getOrDefault(
+                indicatorKey,
+                "Indicador tecnico usado para apoiar a leitura de tendencia, momentum e volatilidade."
+        );
+
+        String html = "<html><body style='width:320px;padding:6px 4px;'>" + message + "</body></html>";
+        JOptionPane.showMessageDialog(
+                this,
+                html,
+                "Sobre: " + indicatorKey,
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private JLabel createSignalBadge() {
