@@ -30,6 +30,7 @@ public class PerformanceChartPanel extends JPanel {
     private static final int BOTTOM_LEGEND_GAP = 8;
 
     private static final int PANEL_GAP = 12;
+    private static final int PANEL_HEADER_HEIGHT = 16;
 
     private static final Color PRICE_COLOR = new Color(0, 105, 184);
     private static final Color PRICE_FILL_TOP = new Color(0, 105, 184, 70);
@@ -183,6 +184,9 @@ public class PerformanceChartPanel extends JPanel {
             Double[] sma200,
             BollingerSeries bollinger
     ) {
+        int plotY = y + PANEL_HEADER_HEIGHT;
+        int plotHeight = Math.max(60, height - PANEL_HEADER_HEIGHT);
+
         double min = perf[0];
         double max = perf[0];
         for (double value : perf) {
@@ -206,19 +210,22 @@ public class PerformanceChartPanel extends JPanel {
         max += padding;
         min -= padding;
 
-        drawGridAndAxes(g2, x, y, width, height, min, max, 6, "%.1f%%");
+        drawGridAndAxes(g2, x, plotY, width, plotHeight, min, max, 6, "%.1f%%");
         drawPanelLabel(g2, "Preco e Medias", x, y);
-        drawAreaUnderPrice(g2, x, y, width, height, perf, min, max);
-        drawNullableLine(g2, x, y, width, height, bollinger.upper(), min, max, BOLLINGER_UPPER_COLOR, 1.2f, true);
-        drawNullableLine(g2, x, y, width, height, bollinger.middle(), min, max, BOLLINGER_MIDDLE_COLOR, 1.1f, false);
-        drawNullableLine(g2, x, y, width, height, bollinger.lower(), min, max, BOLLINGER_LOWER_COLOR, 1.2f, true);
-        drawNullableLine(g2, x, y, width, height, sma200, min, max, SMA200_COLOR, 1.8f, false);
-        drawNullableLine(g2, x, y, width, height, sma50, min, max, SMA50_COLOR, 1.8f, false);
-        drawLine(g2, x, y, width, height, perf, min, max, PRICE_COLOR, 2.4f);
-        drawLatestPoint(g2, x, y, width, height, perf, min, max);
+        drawAreaUnderPrice(g2, x, plotY, width, plotHeight, perf, min, max);
+        drawNullableLine(g2, x, plotY, width, plotHeight, bollinger.upper(), min, max, BOLLINGER_UPPER_COLOR, 1.2f, true);
+        drawNullableLine(g2, x, plotY, width, plotHeight, bollinger.middle(), min, max, BOLLINGER_MIDDLE_COLOR, 1.1f, false);
+        drawNullableLine(g2, x, plotY, width, plotHeight, bollinger.lower(), min, max, BOLLINGER_LOWER_COLOR, 1.2f, true);
+        drawNullableLine(g2, x, plotY, width, plotHeight, sma200, min, max, SMA200_COLOR, 1.8f, false);
+        drawNullableLine(g2, x, plotY, width, plotHeight, sma50, min, max, SMA50_COLOR, 1.8f, false);
+        drawLine(g2, x, plotY, width, plotHeight, perf, min, max, PRICE_COLOR, 2.4f);
+        drawLatestPoint(g2, x, plotY, width, plotHeight, perf, min, max);
     }
 
     private void drawMacdPanel(Graphics2D g2, int x, int y, int width, int height, MacdSeries macd) {
+        int plotY = y + PANEL_HEADER_HEIGHT;
+        int plotHeight = Math.max(40, height - PANEL_HEADER_HEIGHT);
+
         double min = 0.0;
         double max = 0.0;
         min = includeNullableSeriesMin(min, macd.macd());
@@ -232,24 +239,27 @@ public class PerformanceChartPanel extends JPanel {
         max += padding;
         min -= padding;
 
-        drawGridAndAxes(g2, x, y, width, height, min, max, 4, "%.2f");
+        drawGridAndAxes(g2, x, plotY, width, plotHeight, min, max, 4, "%.2f");
         drawPanelLabel(g2, "MACD (12,26,9)", x, y);
-        drawMacdHistogram(g2, x, y, width, height, macd.histogram(), min, max);
-        drawNullableLine(g2, x, y, width, height, macd.macd(), min, max, MACD_COLOR, 1.9f, false);
-        drawNullableLine(g2, x, y, width, height, macd.signal(), min, max, MACD_SIGNAL_COLOR, 1.7f, false);
+        drawMacdHistogram(g2, x, plotY, width, plotHeight, macd.histogram(), min, max);
+        drawNullableLine(g2, x, plotY, width, plotHeight, macd.macd(), min, max, MACD_COLOR, 1.9f, false);
+        drawNullableLine(g2, x, plotY, width, plotHeight, macd.signal(), min, max, MACD_SIGNAL_COLOR, 1.7f, false);
     }
 
     private void drawRsiPanel(Graphics2D g2, int x, int y, int width, int height, Double[] rsi) {
+        int plotY = y + PANEL_HEADER_HEIGHT;
+        int plotHeight = Math.max(40, height - PANEL_HEADER_HEIGHT);
+
         double min = 0.0;
         double max = 100.0;
 
-        drawGridAndAxes(g2, x, y, width, height, min, max, 4, "%.0f");
+        drawGridAndAxes(g2, x, plotY, width, plotHeight, min, max, 4, "%.0f");
         drawPanelLabel(g2, "RSI (14)", x, y);
 
-        int y70 = toY(y, height, min, max, 70.0);
-        int y30 = toY(y, height, min, max, 30.0);
-        int y100 = toY(y, height, min, max, 100.0);
-        int y0 = toY(y, height, min, max, 0.0);
+        int y70 = toY(plotY, plotHeight, min, max, 70.0);
+        int y30 = toY(plotY, plotHeight, min, max, 30.0);
+        int y100 = toY(plotY, plotHeight, min, max, 100.0);
+        int y0 = toY(plotY, plotHeight, min, max, 0.0);
 
         g2.setColor(RSI_OVERBOUGHT_BG);
         g2.fillRect(x + 1, y100 + 1, width - 1, Math.max(1, y70 - y100));
@@ -264,7 +274,7 @@ public class PerformanceChartPanel extends JPanel {
         g2.drawLine(x, y30, x + width, y30);
         g2.setStroke(originalStroke);
 
-        drawNullableLine(g2, x, y, width, height, rsi, min, max, RSI_COLOR, 1.9f, false);
+        drawNullableLine(g2, x, plotY, width, plotHeight, rsi, min, max, RSI_COLOR, 1.9f, false);
     }
 
     private void drawGridAndAxes(
@@ -308,7 +318,7 @@ public class PerformanceChartPanel extends JPanel {
     private void drawPanelLabel(Graphics2D g2, String text, int x, int y) {
         g2.setFont(UiTheme.FONT_STATUS);
         g2.setColor(UiTheme.TEXT_SECONDARY);
-        g2.drawString(text, x + 8, y - 4);
+        g2.drawString(text, x + 8, y + 12);
     }
 
     private void drawAreaUnderPrice(
