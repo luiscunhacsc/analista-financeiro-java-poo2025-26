@@ -110,7 +110,10 @@ public class PerformanceChartPanel extends JPanel {
 
         List<Sp500DataPoint> data = getFilteredData();
         if (data.size() < 2) {
-            drawCenteredMessage(g2, "Sem dados suficientes para desenhar o grafico.");
+            String emptyMessage = allData.isEmpty()
+                    ? "A aguardar dados..."
+                    : "Sem dados suficientes para desenhar o grafico.";
+            drawCenteredMessage(g2, emptyMessage);
             g2.dispose();
             return;
         }
