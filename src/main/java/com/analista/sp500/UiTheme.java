@@ -37,6 +37,13 @@ public final class UiTheme {
     private static final Color PRIMARY_BUTTON_BORDER = new Color(90, 166, 255);
     private static final Color PRIMARY_BUTTON_DISABLED_BG = new Color(37, 45, 60);
     private static final Color PRIMARY_BUTTON_DISABLED_FG = new Color(123, 136, 158);
+    private static final Color SECONDARY_BUTTON_BG = new Color(23, 31, 43);
+    private static final Color SECONDARY_BUTTON_HOVER = new Color(28, 38, 53);
+    private static final Color SECONDARY_BUTTON_PRESSED = new Color(19, 27, 38);
+    private static final Color SECONDARY_BUTTON_BORDER = new Color(63, 76, 98);
+    private static final Color SECONDARY_BUTTON_BORDER_ACTIVE = new Color(92, 124, 167);
+    private static final Color SECONDARY_BUTTON_DISABLED_BG = new Color(18, 24, 34);
+    private static final Color SECONDARY_BUTTON_DISABLED_FG = new Color(108, 121, 143);
 
     public static final Font FONT_TITLE = resolveFont(20, Font.BOLD);
     public static final Font FONT_SUBTITLE = resolveFont(12, Font.PLAIN);
@@ -114,6 +121,25 @@ public final class UiTheme {
         refreshPrimaryButtonStyle(button);
     }
 
+    public static void styleSecondaryButton(JButton button) {
+        button.setUI(new BasicButtonUI());
+        button.setFont(FONT_BODY_BOLD);
+        button.setFocusPainted(false);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setRolloverEnabled(true);
+        button.setBorderPainted(true);
+        button.setBorder(new CompoundBorder(
+                new RoundedLineBorder(SECONDARY_BUTTON_BORDER, 10, 1),
+                new EmptyBorder(6, 12, 6, 12)
+        ));
+        button.setBackground(SECONDARY_BUTTON_BG);
+        button.setForeground(TEXT_PRIMARY);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.addChangeListener(e -> refreshSecondaryButtonStyle(button));
+        refreshSecondaryButtonStyle(button);
+    }
+
     public static void styleRangeToggle(JToggleButton button) {
         button.setFont(FONT_BODY_BOLD);
         button.setFocusPainted(false);
@@ -186,6 +212,39 @@ public final class UiTheme {
                 new RoundedLineBorder(PRIMARY_BUTTON_BORDER, 10, 1),
                 new EmptyBorder(6, 12, 6, 12)
         ));
+    }
+
+    private static void refreshSecondaryButtonStyle(JButton button) {
+        if (!button.isEnabled()) {
+            button.setBackground(SECONDARY_BUTTON_DISABLED_BG);
+            button.setForeground(SECONDARY_BUTTON_DISABLED_FG);
+            button.setBorder(new CompoundBorder(
+                    new RoundedLineBorder(BORDER, 10, 1),
+                    new EmptyBorder(6, 12, 6, 12)
+            ));
+            return;
+        }
+
+        if (button.getModel().isPressed()) {
+            button.setBackground(SECONDARY_BUTTON_PRESSED);
+            button.setBorder(new CompoundBorder(
+                    new RoundedLineBorder(SECONDARY_BUTTON_BORDER_ACTIVE, 10, 1),
+                    new EmptyBorder(6, 12, 6, 12)
+            ));
+        } else if (button.getModel().isRollover()) {
+            button.setBackground(SECONDARY_BUTTON_HOVER);
+            button.setBorder(new CompoundBorder(
+                    new RoundedLineBorder(SECONDARY_BUTTON_BORDER_ACTIVE, 10, 1),
+                    new EmptyBorder(6, 12, 6, 12)
+            ));
+        } else {
+            button.setBackground(SECONDARY_BUTTON_BG);
+            button.setBorder(new CompoundBorder(
+                    new RoundedLineBorder(SECONDARY_BUTTON_BORDER, 10, 1),
+                    new EmptyBorder(6, 12, 6, 12)
+            ));
+        }
+        button.setForeground(TEXT_PRIMARY);
     }
 
     private static void refreshToggleStyle(JToggleButton button) {

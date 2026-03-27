@@ -134,7 +134,8 @@ public class MainFrame extends JFrame {
         rangePanel.add(allButton);
 
         JButton refreshButton = new JButton("Atualizar dados");
-        UiTheme.stylePrimaryButton(refreshButton);
+        UiTheme.styleSecondaryButton(refreshButton);
+        refreshButton.setPreferredSize(new Dimension(148, 36));
         refreshButton.addActionListener(e -> loadData());
 
         controls.add(rangePanel);
