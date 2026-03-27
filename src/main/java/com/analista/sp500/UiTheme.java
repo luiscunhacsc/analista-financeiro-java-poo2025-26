@@ -18,17 +18,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class UiTheme {
-    public static final Color BACKGROUND = new Color(242, 246, 251);
-    public static final Color SURFACE = new Color(255, 255, 255);
-    public static final Color SURFACE_ALT = new Color(248, 250, 253);
-    public static final Color BORDER = new Color(208, 217, 230);
-    public static final Color TEXT_PRIMARY = new Color(29, 39, 53);
-    public static final Color TEXT_SECONDARY = new Color(84, 98, 121);
-    public static final Color PRIMARY = new Color(0, 102, 184);
-    public static final Color PRIMARY_SOFT = new Color(231, 242, 252);
-    public static final Color POSITIVE = new Color(20, 133, 79);
-    public static final Color NEGATIVE = new Color(187, 68, 68);
-    public static final Color NEUTRAL = new Color(121, 131, 145);
+    public static final Color BACKGROUND = new Color(12, 16, 23);
+    public static final Color SURFACE = new Color(20, 26, 35);
+    public static final Color SURFACE_ALT = new Color(27, 34, 46);
+    public static final Color BORDER = new Color(52, 63, 81);
+    public static final Color TEXT_PRIMARY = new Color(236, 241, 249);
+    public static final Color TEXT_SECONDARY = new Color(163, 174, 196);
+    public static final Color PRIMARY = new Color(67, 148, 255);
+    public static final Color PRIMARY_SOFT = new Color(34, 52, 77);
+    public static final Color POSITIVE = new Color(88, 214, 141);
+    public static final Color NEGATIVE = new Color(255, 116, 116);
+    public static final Color NEUTRAL = new Color(155, 168, 191);
 
     public static final Font FONT_TITLE = resolveFont(20, Font.BOLD);
     public static final Font FONT_SUBTITLE = resolveFont(12, Font.PLAIN);
@@ -50,7 +50,10 @@ public final class UiTheme {
         UIManager.put("Label.foreground", TEXT_PRIMARY);
         UIManager.put("ToolTip.background", SURFACE);
         UIManager.put("ToolTip.foreground", TEXT_PRIMARY);
+        UIManager.put("ToolTip.border", BorderFactory.createLineBorder(BORDER));
         UIManager.put("OptionPane.background", SURFACE);
+        UIManager.put("OptionPane.foreground", TEXT_PRIMARY);
+        UIManager.put("OptionPane.messageForeground", TEXT_PRIMARY);
         UIManager.put("OptionPane.messageFont", FONT_BODY);
         UIManager.put("OptionPane.buttonFont", FONT_BODY_BOLD);
     }
@@ -155,7 +158,7 @@ public final class UiTheme {
                     new EmptyBorder(6, 12, 6, 12)
             ));
         } else {
-            button.setBackground(SURFACE);
+            button.setBackground(SURFACE_ALT);
             button.setForeground(TEXT_SECONDARY);
             button.setBorder(new CompoundBorder(
                     new RoundedLineBorder(BORDER, 10, 1),

@@ -2,6 +2,9 @@
 
 Aplicacao Java com Swing que desenha o desempenho do S&P 500 para:
 
+- Ultimo 1 dia
+- Ultimos 5 dias
+- Ultimo 1 mes
 - Ultimo 1 ano
 - Ultimos 3 anos
 - Ultimos 5 anos

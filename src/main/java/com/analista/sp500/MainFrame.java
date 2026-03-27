@@ -32,6 +32,9 @@ public class MainFrame extends JFrame {
     private final JLabel updateLabel = UiTheme.createSubtitleLabel("Ultima atualizacao: n/d");
     private final Sp500DataService dataService = new Sp500DataService();
 
+    private JToggleButton oneDayButton;
+    private JToggleButton fiveDaysButton;
+    private JToggleButton oneMonthButton;
     private JToggleButton oneYearButton;
     private JToggleButton threeYearsButton;
     private JToggleButton fiveYearsButton;
@@ -89,27 +92,42 @@ public class MainFrame extends JFrame {
         JPanel rangePanel = UiTheme.createMutedContainer();
         rangePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 6, 2));
 
+        oneDayButton = new JToggleButton(TimeRange.ONE_DAY.getLabel());
+        fiveDaysButton = new JToggleButton(TimeRange.FIVE_DAYS.getLabel());
+        oneMonthButton = new JToggleButton(TimeRange.ONE_MONTH.getLabel());
         oneYearButton = new JToggleButton(TimeRange.ONE_YEAR.getLabel());
         threeYearsButton = new JToggleButton(TimeRange.THREE_YEARS.getLabel());
         fiveYearsButton = new JToggleButton(TimeRange.FIVE_YEARS.getLabel());
         allButton = new JToggleButton(TimeRange.ALL.getLabel());
+        UiTheme.styleRangeToggle(oneDayButton);
+        UiTheme.styleRangeToggle(fiveDaysButton);
+        UiTheme.styleRangeToggle(oneMonthButton);
         UiTheme.styleRangeToggle(oneYearButton);
         UiTheme.styleRangeToggle(threeYearsButton);
         UiTheme.styleRangeToggle(fiveYearsButton);
         UiTheme.styleRangeToggle(allButton);
 
         ButtonGroup group = new ButtonGroup();
+        group.add(oneDayButton);
+        group.add(fiveDaysButton);
+        group.add(oneMonthButton);
         group.add(oneYearButton);
         group.add(threeYearsButton);
         group.add(fiveYearsButton);
         group.add(allButton);
         oneYearButton.setSelected(true);
 
+        oneDayButton.addActionListener(e -> setRange(TimeRange.ONE_DAY));
+        fiveDaysButton.addActionListener(e -> setRange(TimeRange.FIVE_DAYS));
+        oneMonthButton.addActionListener(e -> setRange(TimeRange.ONE_MONTH));
         oneYearButton.addActionListener(e -> setRange(TimeRange.ONE_YEAR));
         threeYearsButton.addActionListener(e -> setRange(TimeRange.THREE_YEARS));
         fiveYearsButton.addActionListener(e -> setRange(TimeRange.FIVE_YEARS));
         allButton.addActionListener(e -> setRange(TimeRange.ALL));
 
+        rangePanel.add(oneDayButton);
+        rangePanel.add(fiveDaysButton);
+        rangePanel.add(oneMonthButton);
         rangePanel.add(oneYearButton);
         rangePanel.add(threeYearsButton);
         rangePanel.add(fiveYearsButton);

@@ -32,25 +32,25 @@ public class PerformanceChartPanel extends JPanel {
     private static final int PANEL_GAP = 12;
     private static final int PANEL_HEADER_HEIGHT = 16;
 
-    private static final Color PRICE_COLOR = new Color(0, 105, 184);
-    private static final Color PRICE_FILL_TOP = new Color(0, 105, 184, 70);
-    private static final Color PRICE_FILL_BOTTOM = new Color(0, 105, 184, 8);
-    private static final Color SMA50_COLOR = new Color(217, 120, 0);
-    private static final Color SMA200_COLOR = new Color(170, 57, 57);
-    private static final Color BOLLINGER_UPPER_COLOR = new Color(120, 120, 120);
-    private static final Color BOLLINGER_MIDDLE_COLOR = new Color(88, 88, 88);
-    private static final Color BOLLINGER_LOWER_COLOR = new Color(150, 150, 150);
-    private static final Color GRID_COLOR = new Color(226, 233, 243);
-    private static final Color AXIS_COLOR = new Color(159, 171, 188);
-    private static final Color PLOT_BG_TOP = new Color(245, 249, 255);
-    private static final Color PLOT_BG_BOTTOM = new Color(255, 255, 255);
-    private static final Color MACD_COLOR = new Color(28, 122, 192);
-    private static final Color MACD_SIGNAL_COLOR = new Color(235, 129, 26);
-    private static final Color MACD_HIST_POSITIVE = new Color(39, 158, 91, 120);
-    private static final Color MACD_HIST_NEGATIVE = new Color(200, 82, 82, 120);
-    private static final Color RSI_COLOR = new Color(67, 136, 203);
-    private static final Color RSI_OVERBOUGHT_BG = new Color(255, 235, 235, 130);
-    private static final Color RSI_OVERSOLD_BG = new Color(232, 247, 236, 130);
+    private static final Color PRICE_COLOR = new Color(88, 178, 255);
+    private static final Color PRICE_FILL_TOP = new Color(88, 178, 255, 70);
+    private static final Color PRICE_FILL_BOTTOM = new Color(88, 178, 255, 10);
+    private static final Color SMA50_COLOR = new Color(242, 179, 93);
+    private static final Color SMA200_COLOR = new Color(240, 127, 127);
+    private static final Color BOLLINGER_UPPER_COLOR = new Color(173, 182, 196);
+    private static final Color BOLLINGER_MIDDLE_COLOR = new Color(149, 160, 177);
+    private static final Color BOLLINGER_LOWER_COLOR = new Color(136, 145, 160);
+    private static final Color GRID_COLOR = new Color(45, 56, 73);
+    private static final Color AXIS_COLOR = new Color(82, 97, 120);
+    private static final Color PLOT_BG_TOP = new Color(22, 30, 43);
+    private static final Color PLOT_BG_BOTTOM = new Color(17, 24, 36);
+    private static final Color MACD_COLOR = new Color(100, 196, 255);
+    private static final Color MACD_SIGNAL_COLOR = new Color(255, 181, 101);
+    private static final Color MACD_HIST_POSITIVE = new Color(57, 199, 127, 120);
+    private static final Color MACD_HIST_NEGATIVE = new Color(255, 122, 122, 120);
+    private static final Color RSI_COLOR = new Color(114, 184, 255);
+    private static final Color RSI_OVERBOUGHT_BG = new Color(108, 47, 47, 95);
+    private static final Color RSI_OVERSOLD_BG = new Color(40, 91, 58, 95);
 
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final List<Sp500DataPoint> allData = new ArrayList<>();
@@ -94,6 +94,9 @@ public class PerformanceChartPanel extends JPanel {
 
         if (filtered.isEmpty()) {
             return List.copyOf(allData);
+        }
+        if (filtered.size() < 2 && allData.size() >= 2) {
+            return List.copyOf(allData.subList(allData.size() - 2, allData.size()));
         }
         return filtered;
     }
@@ -268,9 +271,9 @@ public class PerformanceChartPanel extends JPanel {
 
         Stroke originalStroke = g2.getStroke();
         g2.setStroke(new BasicStroke(1.0f));
-        g2.setColor(new Color(203, 119, 119));
+        g2.setColor(new Color(220, 125, 125));
         g2.drawLine(x, y70, x + width, y70);
-        g2.setColor(new Color(117, 169, 127));
+        g2.setColor(new Color(113, 191, 132));
         g2.drawLine(x, y30, x + width, y30);
         g2.setStroke(originalStroke);
 
@@ -308,7 +311,7 @@ public class PerformanceChartPanel extends JPanel {
         if (min <= 0 && max >= 0) {
             Stroke originalStroke = g2.getStroke();
             int zeroY = toY(y, height, min, max, 0.0);
-            g2.setColor(new Color(179, 189, 204));
+            g2.setColor(new Color(103, 121, 149));
             g2.setStroke(new BasicStroke(1.1f));
             g2.drawLine(x, zeroY, x + width, zeroY);
             g2.setStroke(originalStroke);
@@ -504,9 +507,9 @@ public class PerformanceChartPanel extends JPanel {
         int padding = 8;
         int legendHeight = padding * 2 + labels.length * lineHeight;
 
-        g2.setColor(new Color(255, 255, 255, 224));
+        g2.setColor(new Color(20, 28, 40, 235));
         g2.fillRoundRect(legendX, legendY, legendWidth, legendHeight, 10, 10);
-        g2.setColor(new Color(206, 216, 229));
+        g2.setColor(new Color(74, 90, 112));
         g2.drawRoundRect(legendX, legendY, legendWidth, legendHeight, 10, 10);
 
         int textX = legendX + 43;
@@ -541,9 +544,9 @@ public class PerformanceChartPanel extends JPanel {
 
         boolean[] dashed = {false, false, false, true, false, true};
 
-        g2.setColor(new Color(255, 255, 255, 230));
+        g2.setColor(new Color(20, 28, 40, 240));
         g2.fillRoundRect(legendX, legendY, legendWidth, legendHeight, 10, 10);
-        g2.setColor(new Color(206, 216, 229));
+        g2.setColor(new Color(74, 90, 112));
         g2.drawRoundRect(legendX, legendY, legendWidth, legendHeight, 10, 10);
 
         int columns = 3;
@@ -591,7 +594,7 @@ public class PerformanceChartPanel extends JPanel {
     private void drawLegendDivider(Graphics2D g2, int dividerX, int chartY, int chartHeight) {
         Stroke originalStroke = g2.getStroke();
         g2.setStroke(new BasicStroke(1f));
-        g2.setColor(new Color(220, 228, 238));
+        g2.setColor(new Color(56, 68, 87));
         g2.drawLine(dividerX, chartY, dividerX, chartY + chartHeight);
         g2.setStroke(originalStroke);
     }
