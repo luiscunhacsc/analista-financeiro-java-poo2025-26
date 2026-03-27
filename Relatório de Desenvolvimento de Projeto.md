@@ -1,4 +1,4 @@
-# Relatório de Desenvolvimento de Projeto
+﻿# Relatório de Desenvolvimento de Projeto
 
 ## Introdução
 Este relatório descreve o desenvolvimento de uma aplicação desktop em Java Swing para análise técnica do índice S&P 500.  
@@ -266,18 +266,17 @@ Pacote: `com.analista.sp500`
 
 ---
 
-## Apresentação do Projeto Final (Screenshots da UI)
-### 1) Dashboard completo (tema escuro)
-![UI principal](docs/screenshots/ui-principal.png)
+## Apresentacao do Projeto Final (Screenshots da UI)
+### Scr01
+![Scr01](./docs/screenshots/Scr01.PNG)
 
-### 2) Detalhe da área de gráficos
-![Detalhe gráfico](docs/screenshots/ui-grafico-detalhe.png)
+### Scr02
+![Scr02](./docs/screenshots/Scr02.PNG)
 
-### 3) Detalhe do painel de indicadores
-![Detalhe indicadores](docs/screenshots/ui-indicadores-detalhe.png)
+### Scr03
+![Scr03](./docs/screenshots/Scr03.PNG)
 
 ---
-
 ## Conclusão Geral / Reflexão Final
 O projeto evoluiu de um gráfico simples para uma aplicação de análise técnica significativamente mais completa, com:
 
@@ -299,4 +298,6 @@ Do ponto de vista de engenharia, o resultado apresenta boa separação de respon
 - Persistência local de configurações (tema, período padrão, layout).
 - Camada de testes automatizados para cálculo dos indicadores.
 - Comparação multi-ativos (ex.: S&P 500 vs Nasdaq).
+
+
 

@@ -30,7 +30,7 @@ public class MainFrame extends JFrame {
     private final JLabel statusLabel = new JLabel("A carregar dados...", SwingConstants.LEFT);
     private final JLabel sourceLabel = UiTheme.createSubtitleLabel("Fonte: Stooq (^SPX, fecho diario)");
     private final JLabel updateLabel = UiTheme.createSubtitleLabel("Ultima atualizacao: n/d");
-    private final Sp500DataService dataService = new Sp500DataService();
+    private final Sp500DataService dataService;
 
     private JToggleButton oneDayButton;
     private JToggleButton fiveDaysButton;
@@ -43,7 +43,12 @@ public class MainFrame extends JFrame {
     private LocalDateTime lastUpdate;
 
     public MainFrame() {
+        this(new Sp500DataService(), true);
+    }
+
+    public MainFrame(Sp500DataService dataService, boolean autoLoadData) {
         super("S&P 500 Analytics");
+        this.dataService = dataService;
         UiTheme.applyGlobalDefaults();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -63,7 +68,12 @@ public class MainFrame extends JFrame {
         UiTheme.applyStatusLabelStyle(statusLabel);
         UiTheme.applyStatusLabelStyle(sourceLabel);
         UiTheme.applyStatusLabelStyle(updateLabel);
-        loadData();
+        if (autoLoadData) {
+            loadData();
+        } else {
+            statusLabel.setText("A aguardar dados...");
+            refreshLastUpdateLabel();
+        }
     }
 
     private JPanel buildHeaderCard() {
@@ -174,7 +184,24 @@ public class MainFrame extends JFrame {
     }
 
     private void setRange(TimeRange range) {
+        markRangeButtonSelected(range);
         chartPanel.setSelectedRange(range);
+        refreshSummaryPanels();
+    }
+
+    public void selectTimeRange(TimeRange range) {
+        setRange(range);
+    }
+
+    public void setDataSnapshot(List<Sp500DataPoint> dataPoints) {
+        chartPanel.setData(dataPoints);
+        lastUpdate = LocalDateTime.now();
+        refreshSummaryPanels();
+    }
+
+    public void setDataSnapshot(List<Sp500DataPoint> dataPoints, LocalDateTime updateTime) {
+        chartPanel.setData(dataPoints);
+        lastUpdate = updateTime;
         refreshSummaryPanels();
     }
 
@@ -208,6 +235,18 @@ public class MainFrame extends JFrame {
         };
 
         worker.execute();
+    }
+
+    private void markRangeButtonSelected(TimeRange range) {
+        switch (range) {
+            case ONE_DAY -> oneDayButton.setSelected(true);
+            case FIVE_DAYS -> fiveDaysButton.setSelected(true);
+            case ONE_MONTH -> oneMonthButton.setSelected(true);
+            case ONE_YEAR -> oneYearButton.setSelected(true);
+            case THREE_YEARS -> threeYearsButton.setSelected(true);
+            case FIVE_YEARS -> fiveYearsButton.setSelected(true);
+            case ALL -> allButton.setSelected(true);
+        }
     }
 
     private void refreshSummaryPanels() {
