@@ -7,10 +7,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
+import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.util.Arrays;
@@ -29,6 +31,12 @@ public final class UiTheme {
     public static final Color POSITIVE = new Color(88, 214, 141);
     public static final Color NEGATIVE = new Color(255, 116, 116);
     public static final Color NEUTRAL = new Color(155, 168, 191);
+    private static final Color PRIMARY_BUTTON_BG = new Color(59, 132, 237);
+    private static final Color PRIMARY_BUTTON_HOVER = new Color(73, 147, 252);
+    private static final Color PRIMARY_BUTTON_PRESSED = new Color(47, 111, 201);
+    private static final Color PRIMARY_BUTTON_BORDER = new Color(90, 166, 255);
+    private static final Color PRIMARY_BUTTON_DISABLED_BG = new Color(37, 45, 60);
+    private static final Color PRIMARY_BUTTON_DISABLED_FG = new Color(123, 136, 158);
 
     public static final Font FONT_TITLE = resolveFont(20, Font.BOLD);
     public static final Font FONT_SUBTITLE = resolveFont(12, Font.PLAIN);
@@ -88,16 +96,22 @@ public final class UiTheme {
     }
 
     public static void stylePrimaryButton(JButton button) {
+        button.setUI(new BasicButtonUI());
         button.setFont(FONT_BODY_BOLD);
         button.setFocusPainted(false);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setRolloverEnabled(true);
+        button.setBorderPainted(true);
         button.setBorder(new CompoundBorder(
-                new RoundedLineBorder(PRIMARY, 10, 1),
+                new RoundedLineBorder(PRIMARY_BUTTON_BORDER, 10, 1),
                 new EmptyBorder(6, 12, 6, 12)
         ));
-        button.setBackground(PRIMARY);
+        button.setBackground(PRIMARY_BUTTON_BG);
         button.setForeground(Color.WHITE);
         button.setOpaque(true);
         button.setContentAreaFilled(true);
+        button.addChangeListener(e -> refreshPrimaryButtonStyle(button));
+        refreshPrimaryButtonStyle(button);
     }
 
     public static void styleRangeToggle(JToggleButton button) {
@@ -146,6 +160,31 @@ public final class UiTheme {
         component.setBorder(new CompoundBorder(
                 new RoundedLineBorder(background.darker(), 10, 1),
                 new EmptyBorder(3, 10, 3, 10)
+        ));
+    }
+
+    private static void refreshPrimaryButtonStyle(JButton button) {
+        if (!button.isEnabled()) {
+            button.setBackground(PRIMARY_BUTTON_DISABLED_BG);
+            button.setForeground(PRIMARY_BUTTON_DISABLED_FG);
+            button.setBorder(new CompoundBorder(
+                    new RoundedLineBorder(BORDER, 10, 1),
+                    new EmptyBorder(6, 12, 6, 12)
+            ));
+            return;
+        }
+
+        if (button.getModel().isPressed()) {
+            button.setBackground(PRIMARY_BUTTON_PRESSED);
+        } else if (button.getModel().isRollover()) {
+            button.setBackground(PRIMARY_BUTTON_HOVER);
+        } else {
+            button.setBackground(PRIMARY_BUTTON_BG);
+        }
+        button.setForeground(Color.WHITE);
+        button.setBorder(new CompoundBorder(
+                new RoundedLineBorder(PRIMARY_BUTTON_BORDER, 10, 1),
+                new EmptyBorder(6, 12, 6, 12)
         ));
     }
 
